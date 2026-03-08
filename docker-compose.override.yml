@@ -34,6 +34,11 @@ services:
       - email-api
     entrypoint: ["/home/node/.openclaw/scripts/entrypoint-wrapper.sh"]
     command: ["node", "dist/index.js", "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789"]
+    ports:
+      - "${AGENT_PORT_1:-18081}:18081"
+      - "${AGENT_PORT_2:-18082}:18082"
+      - "${AGENT_PORT_3:-18083}:18083"
+      - "${AGENT_PORT_4:-18084}:18084"
     environment:
       ANTHROPIC_API_KEY: ${DUMMY_ANTHROPIC_API_KEY}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
