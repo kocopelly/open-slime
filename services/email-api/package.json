@@ -1,0 +1,13 @@
+{
+  "name": "email-api",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@hono/node-server": "^1",
+    "hono": "^4",
+    "imapflow": "^1",
+    "mailparser": "^3",
+    "nodemailer": "^6",
+    "tsx": "^4"
+  }
+}

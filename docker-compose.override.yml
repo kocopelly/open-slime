@@ -1,0 +1,66 @@
+services:
+  anthropic-proxy:
+    image: nginx:alpine
+    env_file: .env.proxy
+    volumes:
+      - ./nginx/anthropic-proxy.conf.template:/etc/nginx/templates/default.conf.template:ro,z
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  proton-bridge:
+    image: syphr/proton-bridge:latest
+    env_file: .env.bridge
+    volumes:
+      - proton-bridge-config:/root/.config/protonmail/bridge
+      - proton-bridge-pass:/root/.password-store
+      - proton-bridge-cache:/root/.cache/protonmail/bridge
+      - /etc/pki/tls/certs/ca-bundle.crt:/etc/ssl/certs/ca-certificates.crt:ro
+    restart: unless-stopped
+    command: ["--noninteractive"]
+
+  email-api:
+    build: ./services/email-api
+    env_file: .env.email
+    depends_on:
+      - proton-bridge
+    expose:
+      - "3001"
+    restart: unless-stopped
+
+  openclaw-gateway:
+    depends_on:
+      - anthropic-proxy
+      - email-api
+    entrypoint: ["/home/node/.openclaw/scripts/entrypoint-wrapper.sh"]
+    command: ["node", "dist/index.js", "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789"]
+    environment:
+      ANTHROPIC_API_KEY: ${DUMMY_ANTHROPIC_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      GH_TOKEN: ${GH_TOKEN}
+      SLACK_APP_TOKEN: ${SLACK_APP_TOKEN}
+      SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      PATH: /home/node/.openclaw/bin:/root/.bun/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.ssh:/home/node/.ssh:z
+    group_add:
+      - "${DOCKER_GID:-970}"
+
+  chromium:
+    image: browserless/chrome
+    ports:
+      - "18800:3000"
+    environment:
+      CONNECTION_TIMEOUT: 600000
+    restart: unless-stopped
+
+  openclaw-cli:
+    environment:
+      ANTHROPIC_API_KEY: ${DUMMY_ANTHROPIC_API_KEY}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+
+volumes:
+  proton-bridge-config:
+  proton-bridge-pass:
+  proton-bridge-cache:

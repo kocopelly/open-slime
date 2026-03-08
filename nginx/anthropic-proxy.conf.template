@@ -1,0 +1,19 @@
+server {
+    listen 8080;
+
+    location / {
+        proxy_pass https://api.anthropic.com;
+        proxy_ssl_server_name on;
+        proxy_set_header Host api.anthropic.com;
+        proxy_set_header x-api-key ${ANTHROPIC_API_KEY};
+        proxy_set_header Connection '';
+        proxy_http_version 1.1;
+
+        # Pass through all other headers from the client
+        proxy_pass_request_headers on;
+
+        # Support streaming responses
+        proxy_buffering off;
+        chunked_transfer_encoding on;
+    }
+}

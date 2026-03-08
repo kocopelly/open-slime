@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# OpenClaw convenience wrapper
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+case "${1:-}" in
+  up)      docker compose up -d openclaw-gateway ;;
+  down)    docker compose down ;;
+  restart) docker compose restart openclaw-gateway ;;
+  logs)    docker compose logs -f openclaw-gateway ;;
+  config)  shift; docker compose run --rm openclaw-cli config "$@" ;;
+  cli)     shift; docker compose run --rm openclaw-cli "$@" ;;
+  status)  docker compose run --rm openclaw-cli status ;;
+  pair)    docker compose run --rm openclaw-cli pairing "$@" ;;
+  edit)    ${EDITOR:-nano} ~/.openclaw/openclaw.json ;;
+  *)
+    echo "Usage: ./oc {up|down|restart|logs|config|cli|status|pair|edit}"
+    echo ""
+    echo "  up       - Start the gateway"
+    echo "  down     - Stop everything"
+    echo "  restart  - Restart the gateway"
+    echo "  logs     - Tail gateway logs"
+    echo "  config   - Config commands (get/set)"
+    echo "  cli      - Run any openclaw CLI command"
+    echo "  status   - Show channel health"
+    echo "  pair     - Manage pairing"
+    echo "  edit     - Edit config in \$EDITOR"
+    ;;
+esac

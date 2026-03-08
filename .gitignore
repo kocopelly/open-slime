@@ -1,6 +1,9 @@
 node_modules
 **/node_modules/
 .env
+.credentials
+.env.private
+.env.*
 docker-compose.extra.yml
 dist
 pnpm-lock.yaml
@@ -89,6 +92,9 @@ USER.md
 # local tooling
 .serena/
 
+# SSH keys (NEVER COMMIT)
+.ssh/
+
 # Agent credentials and memory (NEVER COMMIT)
 /memory/
 .agent/*.json
@@ -121,3 +127,4 @@ dist/protocol.schema.json
 
 # Synthing
 **/.stfolder/
+proton-bridge.asc

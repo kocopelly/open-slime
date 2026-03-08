@@ -1,3 +1,6 @@
+.env
+.env.private
+.credentials
 .git
 .worktrees
 .bun-cache
