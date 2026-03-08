@@ -103,6 +103,26 @@ ABC settings are in the page HTML. Each setting block contains the key in `K:` f
 4. Extract common keys from settings
 5. Build tune entry with `name`, `type`, `tradition`, `commonKeys`, `external.thesession`
 
+### Link to specific dots (settings)
+
+Each tune on TheSession has multiple "settings" (transcriptions). Each setting has a unique ID.
+
+URL format: `https://thesession.org/tunes/{tuneId}#setting{settingId}`
+
+From the API response:
+```json
+{
+  "settings": [
+    { "id": 182, "url": "https://thesession.org/tunes/182#setting182", "key": "Dmajor", "abc": "..." }
+  ]
+}
+```
+
+Use `settingId` in the nashville-folk-session data model to link a tune-in-a-set to the exact transcription used:
+```json
+{ "tuneId": "tune_001", "key": "D", "settingId": 182 }
+```
+
 ### Batch enrich tunes
 
 For each tune with a `thesession` ID:
