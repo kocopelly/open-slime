@@ -117,6 +117,14 @@
 - PR submission template (canonical): `.github/pull_request_template.md`
 - Issue submission templates (canonical): `.github/ISSUE_TEMPLATE/`
 
+## Custom Skills (Slime)
+
+- Custom/modified skills live in `skills/` alongside bundled ones.
+- **Always track skill changes via PR** — when creating or editing a skill locally, open a PR to `kocopelly/open-slime` so the work is git-tracked and reviewable.
+- Skills developed locally (`~/.openclaw/skills/` or `workspace/skills/`) are working copies; the repo is the source of truth.
+- On merge + pull, local skills get updated from the repo.
+- Current custom skills: `email` (Proton Mail via email-api sidecar), `thesession` (TheSession.org Irish music API).
+
 ## Shorthand Commands
 
 - `sync`: if working tree is dirty, commit all changes (pick a sensible Conventional Commit message), then `git pull --rebase`; if rebase conflicts and cannot resolve, stop; otherwise `git push`.
