@@ -5,9 +5,8 @@ Mounts a shared Google Drive folder into the OpenClaw container at `workspace/gd
 ## Setup
 
 1. **Enable the Google Drive API** in your GCP project (if not already enabled)
-2. **Create a folder** in Google Drive (e.g. "slime-workspace")
-3. **Share it** with your service account email as **Editor**:
-   - `slime-the-bot@slime-489601.iam.gserviceaccount.com`
+2. **Create a folder** in Google Drive
+3. **Share it** with your service account email as **Editor**
 4. **Get the folder ID** from the Drive URL:
    - `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
 5. **Add to `.env`**:
@@ -18,7 +17,7 @@ Mounts a shared Google Drive folder into the OpenClaw container at `workspace/gd
 
 ## How it works
 
-- Uses `rclone mount` with the existing Google service account (no OAuth needed)
+- Uses `rclone mount` with a Google service account (no OAuth needed)
 - VFS cache mode `full` — reads and writes are cached locally for speed
 - Poll interval 30s — changes from Drive appear within ~30 seconds
 - The mount appears at `/home/node/.openclaw/workspace/gdrive/` inside the container
@@ -28,10 +27,10 @@ Mounts a shared Google Drive folder into the OpenClaw container at `workspace/gd
 Create subdirectories in the Drive folder for each project that needs shared artifacts:
 
 ```
-slime-workspace/          (Drive root)
-  boss-moves/             (shared with Tribe)
-  another-project/        (shared with whoever)
+<drive-root>/
+  project-a/
+  project-b/
 ```
 
-Projects reference their Drive folder via `workspace/gdrive/boss-moves/` etc.
+Projects reference their Drive folder via `workspace/gdrive/<project>/`.
 Local-only projects just stay in `workspace/projects/` — no Drive needed.
