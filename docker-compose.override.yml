@@ -28,10 +28,30 @@ services:
       - "3001"
     restart: unless-stopped
 
+  gdrive:
+    image: rclone/rclone:latest
+    volumes:
+      - ./services/gdrive/rclone.conf.template:/config/rclone.conf.template:ro
+      - ./services/gdrive/entrypoint.sh:/entrypoint.sh:ro
+      - ${OPENCLAW_CONFIG_DIR}/secrets/google-service-account.json:/config/service-account.json:ro
+      - gdrive-data:/data:shared
+      - gdrive-cache:/root/.cache/rclone
+    environment:
+      GDRIVE_ROOT_FOLDER_ID: ${GDRIVE_ROOT_FOLDER_ID:-}
+    entrypoint: ["/entrypoint.sh"]
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse
+    security_opt:
+      - apparmor:unconfined
+    restart: unless-stopped
+
   openclaw-gateway:
     depends_on:
       - anthropic-proxy
       - email-api
+      - gdrive
     entrypoint: ["/home/node/.openclaw/scripts/entrypoint-wrapper.sh"]
     command: ["node", "dist/index.js", "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789"]
     ports:
@@ -49,6 +69,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.ssh:/home/node/.ssh:z
+      - gdrive-data:/home/node/.openclaw/workspace/gdrive:shared
     group_add:
       - "${DOCKER_GID:-970}"
 
@@ -69,3 +90,5 @@ volumes:
   proton-bridge-config:
   proton-bridge-pass:
   proton-bridge-cache:
+  gdrive-data:
+  gdrive-cache:
