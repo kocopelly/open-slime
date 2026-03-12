@@ -2,7 +2,9 @@
 set -e
 
 # Generate rclone config from template
-envsubst < /config/rclone.conf.template > /config/rclone/rclone.conf
+mkdir -p /config/rclone
+sed "s|\${GDRIVE_ROOT_FOLDER_ID}|${GDRIVE_ROOT_FOLDER_ID}|g" \
+  /config/rclone.conf.template > /config/rclone/rclone.conf
 
 # Create mount point
 mkdir -p /data
@@ -14,6 +16,7 @@ exec rclone mount gdrive: /data \
   --vfs-cache-max-age 1h \
   --vfs-read-chunk-size 8M \
   --allow-other \
+  --allow-non-empty \
   --dir-cache-time 5m \
   --poll-interval 30s \
   --log-level INFO
