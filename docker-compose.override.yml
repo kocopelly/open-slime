@@ -28,30 +28,10 @@ services:
       - "3001"
     restart: unless-stopped
 
-  gdrive:
-    image: rclone/rclone:latest
-    volumes:
-      - ./services/gdrive/rclone.conf.template:/config/rclone.conf.template:ro,z
-      - ./services/gdrive/entrypoint.sh:/entrypoint.sh:ro,z
-      - ${OPENCLAW_CONFIG_DIR}/secrets/google-service-account.json:/config/service-account.json:ro,z
-      - ./data/gdrive:/data:z,shared
-      - ./data/gdrive-cache:/root/.cache/rclone:z
-    environment:
-      GDRIVE_ROOT_FOLDER_ID: ${GDRIVE_ROOT_FOLDER_ID:-}
-    entrypoint: ["/entrypoint.sh"]
-    cap_add:
-      - SYS_ADMIN
-    devices:
-      - /dev/fuse
-    security_opt:
-      - label=disable
-    restart: unless-stopped
-
   openclaw-gateway:
     depends_on:
       - anthropic-proxy
       - email-api
-      - gdrive
     entrypoint: ["/home/node/.openclaw/scripts/entrypoint-wrapper.sh"]
     command: ["node", "dist/index.js", "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789"]
     ports:
@@ -69,7 +49,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./.ssh:/home/node/.ssh:z
-      - ./data/gdrive:/home/node/.openclaw/workspace/gdrive:slave
     group_add:
       - "${DOCKER_GID:-970}"
 
