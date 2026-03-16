@@ -28,10 +28,17 @@ services:
       - "3001"
     restart: unless-stopped
 
+  custom-api:
+    build: ./services/custom-api
+    expose:
+      - "3002"
+    restart: unless-stopped
+
   openclaw-gateway:
     depends_on:
       - anthropic-proxy
       - email-api
+      - custom-api
     entrypoint: ["/home/node/.openclaw/scripts/entrypoint-wrapper.sh"]
     command: ["node", "dist/index.js", "gateway", "--bind", "${OPENCLAW_GATEWAY_BIND:-lan}", "--port", "18789"]
     ports:
